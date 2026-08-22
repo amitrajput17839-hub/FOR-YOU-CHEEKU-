@@ -96,23 +96,19 @@
   <!-- Main Responsive Container -->
   <main class="w-full max-w-2xl mx-auto flex-1 flex flex-col justify-center items-center relative z-10 my-auto">
 
-    <!-- ========================================== -->
     <!-- SCREEN 0: SPLASH SCREEN -->
-    <!-- ========================================== -->
     <section id="screen-splash" class="app-screen active items-center justify-center text-center py-12">
       <div class="animate-heartbeat text-rose-500 mb-6">
         <i data-lucide="heart" class="w-28 h-28 fill-rose-400 stroke-rose-500"></i>
       </div>
       <h1 class="text-4xl font-extrabold text-gray-800 tracking-tight mb-2">For You</h1>
       <p class="text-rose-400 font-medium text-base">A little place made only for you.</p>
-      <button onclick="navTo('home')" class="mt-8 px-6 py-2.5 bg-rose-400 text-white rounded-full font-semibold text-xs shadow-md animate-pulse">
+      <button onclick="navTo('home')" class="mt-8 px-8 py-3 bg-rose-400 hover:bg-rose-500 text-white rounded-full font-bold text-sm shadow-md transition-all active:scale-95 cursor-pointer">
         Tap to Enter ❤️
       </button>
     </section>
 
-    <!-- ========================================== -->
     <!-- SCREEN 1: HOME SCREEN -->
-    <!-- ========================================== -->
     <section id="screen-home" class="app-screen text-center py-4 w-full">
       <div class="mb-6">
         <h2 class="text-3xl font-extrabold text-gray-800 flex items-center justify-center gap-2">
@@ -122,7 +118,6 @@
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-xl mx-auto">
-        <!-- Card 1 -->
         <button onclick="navTo('iloveyou')" class="p-5 bg-white/90 backdrop-blur rounded-2xl border border-rose-200/80 shadow-sm hover:shadow-md transition-all active:scale-95 flex items-center justify-between text-left group">
           <div class="flex items-center gap-4">
             <div class="w-12 h-12 rounded-xl bg-rose-100 text-rose-500 flex items-center justify-center">
@@ -136,7 +131,6 @@
           <i data-lucide="sparkles" class="w-5 h-5 text-rose-300"></i>
         </button>
 
-        <!-- Card 2 -->
         <button onclick="navTo('openwhen')" class="p-5 bg-white/90 backdrop-blur rounded-2xl border border-rose-200/80 shadow-sm hover:shadow-md transition-all active:scale-95 flex items-center justify-between text-left group">
           <div class="flex items-center gap-4">
             <div class="w-12 h-12 rounded-xl bg-rose-100 text-rose-500 flex items-center justify-center">
@@ -150,7 +144,6 @@
           <i data-lucide="heart-handshake" class="w-5 h-5 text-rose-300"></i>
         </button>
 
-        <!-- Card 3 -->
         <button onclick="navTo('sorry')" class="p-5 bg-white/90 backdrop-blur rounded-2xl border border-rose-200/80 shadow-sm hover:shadow-md transition-all active:scale-95 flex items-center justify-between text-left group">
           <div class="flex items-center gap-4">
             <div class="w-12 h-12 rounded-xl bg-rose-100 text-rose-500 flex items-center justify-center">
@@ -164,7 +157,6 @@
           <i data-lucide="heart" class="w-5 h-5 text-rose-300"></i>
         </button>
 
-        <!-- Card 4 -->
         <button onclick="navTo('counter')" class="p-5 bg-white/90 backdrop-blur rounded-2xl border border-rose-200/80 shadow-sm hover:shadow-md transition-all active:scale-95 flex items-center justify-between text-left group">
           <div class="flex items-center gap-4">
             <div class="w-12 h-12 rounded-xl bg-rose-100 text-rose-500 flex items-center justify-center">
@@ -178,7 +170,6 @@
           <i data-lucide="calculator" class="w-5 h-5 text-rose-300"></i>
         </button>
 
-        <!-- Card 5 -->
         <button onclick="navTo('surprise')" class="p-5 bg-white/90 backdrop-blur rounded-2xl border border-rose-200/80 shadow-sm hover:shadow-md transition-all active:scale-95 flex items-center justify-between text-left group sm:col-span-2">
           <div class="flex items-center gap-4">
             <div class="w-12 h-12 rounded-xl bg-rose-100 text-rose-500 flex items-center justify-center">
@@ -194,9 +185,7 @@
       </div>
     </section>
 
-    <!-- ========================================== -->
     <!-- SCREEN 2: I LOVE YOU -->
-    <!-- ========================================== -->
     <section id="screen-iloveyou" class="app-screen text-center py-6 w-full items-center">
       <div class="mb-6">
         <h3 class="text-2xl font-bold text-gray-800">I Love You ❤️</h3>
@@ -216,9 +205,7 @@
       </div>
     </section>
 
-    <!-- ========================================== -->
     <!-- SCREEN 3: OPEN WHEN LETTERS -->
-    <!-- ========================================== -->
     <section id="screen-openwhen" class="app-screen py-4 w-full">
       <div id="openwhen-list-view" class="w-full">
         <div class="mb-4 text-center">
@@ -235,15 +222,13 @@
           <h4 id="letter-title" class="text-lg font-bold text-gray-800 mb-3"></h4>
           <p id="letter-body" class="text-sm text-gray-700 leading-relaxed whitespace-pre-line"></p>
         </div>
-        <button onclick="closeLetter()" class="w-full py-3 bg-rose-400 text-white font-bold rounded-xl shadow-md text-xs">
+        <button onclick="closeLetter()" class="w-full py-3 bg-rose-400 text-white font-bold rounded-xl shadow-md text-xs cursor-pointer">
           Back to All Letters ❤️
         </button>
       </div>
     </section>
 
-    <!-- ========================================== -->
     <!-- SCREEN 4: I'M SORRY -->
-    <!-- ========================================== -->
     <section id="screen-sorry" class="app-screen text-center py-4 w-full items-center">
       <div id="sorry-step-1" class="w-full max-w-md mx-auto flex flex-col items-center">
         <h3 class="text-2xl font-bold text-gray-800 mb-1">I'm Sorry...</h3>
@@ -253,7 +238,7 @@
           <i data-lucide="frown" class="w-24 h-24 stroke-[1.5]"></i>
         </div>
 
-        <button onclick="showApologyText()" class="w-full py-3.5 bg-rose-400 text-white font-bold rounded-xl shadow-md mt-6">
+        <button onclick="showApologyText()" class="w-full py-3.5 bg-rose-400 text-white font-bold rounded-xl shadow-md mt-6 cursor-pointer">
           Listen to me ❤️
         </button>
       </div>
@@ -269,9 +254,9 @@
 
         <p class="text-center text-sm font-bold text-gray-700 mb-3">Forgive me?</p>
         <div class="grid grid-cols-3 gap-2">
-          <button onclick="handleApologyChoice('yes')" class="py-3 bg-rose-500 text-white text-xs font-bold rounded-xl shadow-sm">❤️ Yes</button>
-          <button onclick="handleApologyChoice('talk')" class="py-3 bg-rose-100 text-rose-600 text-xs font-bold rounded-xl">💬 Talk to me</button>
-          <button onclick="handleApologyChoice('angry')" class="py-3 bg-gray-100 text-gray-600 text-xs font-bold rounded-xl">😤 Still angry</button>
+          <button onclick="handleApologyChoice('yes')" class="py-3 bg-rose-500 text-white text-xs font-bold rounded-xl shadow-sm cursor-pointer">❤️ Yes</button>
+          <button onclick="handleApologyChoice('talk')" class="py-3 bg-rose-100 text-rose-600 text-xs font-bold rounded-xl cursor-pointer">💬 Talk to me</button>
+          <button onclick="handleApologyChoice('angry')" class="py-3 bg-gray-100 text-gray-600 text-xs font-bold rounded-xl cursor-pointer">😤 Still angry</button>
         </div>
       </div>
 
@@ -291,7 +276,7 @@
         </div>
         <form onsubmit="sendPrivateMessage(event)" class="flex gap-2">
           <input type="text" id="chat-input" placeholder="Type what you feel..." class="flex-1 text-xs p-3 rounded-xl border border-rose-200 bg-white" />
-          <button type="submit" class="bg-rose-400 text-white px-4 py-3 rounded-xl text-xs font-bold">Send</button>
+          <button type="submit" class="bg-rose-400 text-white px-4 py-3 rounded-xl text-xs font-bold cursor-pointer">Send</button>
         </form>
       </div>
 
@@ -302,9 +287,7 @@
       </div>
     </section>
 
-    <!-- ========================================== -->
     <!-- SCREEN 5: HOW MUCH I LOVE YOU -->
-    <!-- ========================================== -->
     <section id="screen-counter" class="app-screen text-center py-4 w-full items-center">
       <div class="mb-4">
         <h3 class="text-2xl font-bold text-gray-800">How Much I Love You</h3>
@@ -316,14 +299,12 @@
         <p id="counter-subtext" class="text-xs text-rose-400 font-semibold mt-4 min-h-[20px]"></p>
       </div>
 
-      <button id="counter-btn" onclick="startLoveCounter()" class="w-full max-w-md mt-6 py-3.5 bg-rose-400 text-white font-bold rounded-xl shadow-md">
+      <button id="counter-btn" onclick="startLoveCounter()" class="w-full max-w-md mt-6 py-3.5 bg-rose-400 text-white font-bold rounded-xl shadow-md cursor-pointer">
         <span id="counter-btn-text">MEASURE MY LOVE ❤️</span>
       </button>
     </section>
 
-    <!-- ========================================== -->
     <!-- SCREEN 6: A LITTLE SURPRISE -->
-    <!-- ========================================== -->
     <section id="screen-surprise" class="app-screen text-center py-4 w-full items-center">
       <div class="mb-4">
         <h3 class="text-2xl font-bold text-gray-800">A Little Surprise</h3>
@@ -343,7 +324,7 @@
         </div>
       </div>
 
-      <button onclick="openSurprise()" class="w-full max-w-md mt-6 py-3.5 bg-rose-400 text-white font-bold rounded-xl shadow-md">
+      <button onclick="openSurprise()" class="w-full max-w-md mt-6 py-3.5 bg-rose-400 text-white font-bold rounded-xl shadow-md cursor-pointer">
         Open it ❤️
       </button>
     </section>
@@ -402,4 +383,18 @@
         title: "Open when... You can't sleep",
         icon: "moon",
         tag: "Nighttime",
-        body: "The night is quiet, and so should your mind be. Turn off the
+        body: "The night is quiet, and so should your mind be. Turn off the overthinking.\n\nImagine me tucking you in softly. Close your eyes, rest your head, and dream happy dreams. Goodnight my love."
+      }
+    ];
+
+    const SURPRISES = [
+      { text: "I just wanted to remind you that I love you. ❤️", tag: "Love Note" },
+      { text: "If I could give you one thing right now, it would be a really long hug.", tag: "Virtual Hug" },
+      { text: "You're still my favourite person.", tag: "Sweet Reminder" },
+      { text: "Just a reminder: someone out here is thinking about you.", tag: "Thinking of You" },
+      { text: "Come here. You deserve a hug. 🫂", tag: "Virtual Hug" },
+      { text: "You make my days better without even trying.", tag: "Compliment" }
+    ];
+
+    let lastLoveIndex = -1;
+    let s
