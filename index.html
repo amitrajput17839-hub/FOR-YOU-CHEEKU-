@@ -6,7 +6,6 @@
   <title>For You ❤️</title>
   
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   
   <style>
@@ -87,7 +86,6 @@
   <!-- Header Bar -->
   <header id="app-header" class="w-full max-w-2xl mx-auto flex items-center justify-between pb-4 border-b border-rose-200/60 mb-4 hidden">
     <button onclick="navTo('home')" class="inline-flex items-center gap-2 text-sm font-bold text-rose-500 hover:text-rose-600 bg-white/80 backdrop-blur px-4 py-2 rounded-full shadow-sm border border-rose-100 transition-all active:scale-95">
-      <i data-lucide="arrow-left" class="w-4 h-4"></i>
       <span>← For You</span>
     </button>
     <span id="header-title" class="text-xs font-bold text-rose-400 tracking-wider uppercase"></span>
@@ -98,8 +96,8 @@
 
     <!-- SCREEN 0: SPLASH SCREEN -->
     <section id="screen-splash" class="app-screen active items-center justify-center text-center py-12">
-      <div class="animate-heartbeat text-rose-500 mb-6">
-        <i data-lucide="heart" class="w-28 h-28 fill-rose-400 stroke-rose-500"></i>
+      <div class="animate-heartbeat text-rose-500 mb-6 text-7xl">
+        ❤️
       </div>
       <h1 class="text-4xl font-extrabold text-gray-800 tracking-tight mb-2">For You</h1>
       <p class="text-rose-400 font-medium text-base">A little place made only for you.</p>
@@ -120,67 +118,67 @@
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-xl mx-auto">
         <button onclick="navTo('iloveyou')" class="p-5 bg-white/90 backdrop-blur rounded-2xl border border-rose-200/80 shadow-sm hover:shadow-md transition-all active:scale-95 flex items-center justify-between text-left group">
           <div class="flex items-center gap-4">
-            <div class="w-12 h-12 rounded-xl bg-rose-100 text-rose-500 flex items-center justify-center">
-              <i data-lucide="heart" class="w-6 h-6 fill-rose-400"></i>
+            <div class="w-12 h-12 rounded-xl bg-rose-100 text-rose-500 flex items-center justify-center text-xl">
+              ❤️
             </div>
             <div>
               <h3 class="font-bold text-gray-800 text-base group-hover:text-rose-500">I Love You</h3>
               <p class="text-xs text-rose-400">Sweet thoughts</p>
             </div>
           </div>
-          <i data-lucide="sparkles" class="w-5 h-5 text-rose-300"></i>
+          <span class="text-rose-300">✨</span>
         </button>
 
         <button onclick="navTo('openwhen')" class="p-5 bg-white/90 backdrop-blur rounded-2xl border border-rose-200/80 shadow-sm hover:shadow-md transition-all active:scale-95 flex items-center justify-between text-left group">
           <div class="flex items-center gap-4">
-            <div class="w-12 h-12 rounded-xl bg-rose-100 text-rose-500 flex items-center justify-center">
-              <i data-lucide="mail" class="w-6 h-6"></i>
+            <div class="w-12 h-12 rounded-xl bg-rose-100 text-rose-500 flex items-center justify-center text-xl">
+              💌
             </div>
             <div>
               <h3 class="font-bold text-gray-800 text-base group-hover:text-rose-500">Open When...</h3>
               <p class="text-xs text-rose-400">Love letters</p>
             </div>
           </div>
-          <i data-lucide="heart-handshake" class="w-5 h-5 text-rose-300"></i>
+          <span class="text-rose-300">🤝</span>
         </button>
 
         <button onclick="navTo('sorry')" class="p-5 bg-white/90 backdrop-blur rounded-2xl border border-rose-200/80 shadow-sm hover:shadow-md transition-all active:scale-95 flex items-center justify-between text-left group">
           <div class="flex items-center gap-4">
-            <div class="w-12 h-12 rounded-xl bg-rose-100 text-rose-500 flex items-center justify-center">
-              <i data-lucide="smile-plus" class="w-6 h-6"></i>
+            <div class="w-12 h-12 rounded-xl bg-rose-100 text-rose-500 flex items-center justify-center text-xl">
+              🥺
             </div>
             <div>
               <h3 class="font-bold text-gray-800 text-base group-hover:text-rose-500">I'm Sorry</h3>
               <p class="text-xs text-rose-400">From my heart</p>
             </div>
           </div>
-          <i data-lucide="heart" class="w-5 h-5 text-rose-300"></i>
+          <span class="text-rose-300">❤️</span>
         </button>
 
         <button onclick="navTo('counter')" class="p-5 bg-white/90 backdrop-blur rounded-2xl border border-rose-200/80 shadow-sm hover:shadow-md transition-all active:scale-95 flex items-center justify-between text-left group">
           <div class="flex items-center gap-4">
-            <div class="w-12 h-12 rounded-xl bg-rose-100 text-rose-500 flex items-center justify-center">
-              <i data-lucide="infinity" class="w-6 h-6"></i>
+            <div class="w-12 h-12 rounded-xl bg-rose-100 text-rose-500 flex items-center justify-center text-xl">
+              ♾️
             </div>
             <div>
               <h3 class="font-bold text-gray-800 text-base group-hover:text-rose-500">How Much I Love You</h3>
               <p class="text-xs text-rose-400">Love counter</p>
             </div>
           </div>
-          <i data-lucide="calculator" class="w-5 h-5 text-rose-300"></i>
+          <span class="text-rose-300">🧮</span>
         </button>
 
         <button onclick="navTo('surprise')" class="p-5 bg-white/90 backdrop-blur rounded-2xl border border-rose-200/80 shadow-sm hover:shadow-md transition-all active:scale-95 flex items-center justify-between text-left group sm:col-span-2">
           <div class="flex items-center gap-4">
-            <div class="w-12 h-12 rounded-xl bg-rose-100 text-rose-500 flex items-center justify-center">
-              <i data-lucide="gift" class="w-6 h-6"></i>
+            <div class="w-12 h-12 rounded-xl bg-rose-100 text-rose-500 flex items-center justify-center text-xl">
+              🎁
             </div>
             <div>
               <h3 class="font-bold text-gray-800 text-base group-hover:text-rose-500">A Little Surprise</h3>
               <p class="text-xs text-rose-400">Unwrap something sweet</p>
             </div>
           </div>
-          <i data-lucide="package-open" class="w-5 h-5 text-rose-300"></i>
+          <span class="text-rose-300">📦</span>
         </button>
       </div>
     </section>
@@ -193,8 +191,8 @@
       </div>
 
       <button id="heart-btn" onclick="triggerLoveMessage()" class="my-auto focus:outline-none active:scale-90 transition-transform cursor-pointer">
-        <div id="heart-icon" class="animate-heartbeat text-rose-500 drop-shadow-md hover:scale-105 transition-transform">
-          <i data-lucide="heart" class="w-36 h-36 fill-rose-400 stroke-rose-500"></i>
+        <div id="heart-icon" class="animate-heartbeat text-8xl hover:scale-105 transition-transform">
+          ❤️
         </div>
       </button>
 
@@ -234,8 +232,8 @@
         <h3 class="text-2xl font-bold text-gray-800 mb-1">I'm Sorry...</h3>
         <p class="text-xs text-rose-400 mb-6">I know sometimes I mess things up.</p>
 
-        <div class="animate-float text-rose-300 my-6">
-          <i data-lucide="frown" class="w-24 h-24 stroke-[1.5]"></i>
+        <div class="animate-float text-6xl my-6">
+          🥺
         </div>
 
         <button onclick="showApologyText()" class="w-full py-3.5 bg-rose-400 text-white font-bold rounded-xl shadow-md mt-6 cursor-pointer">
@@ -261,7 +259,7 @@
       </div>
 
       <div id="sorry-outcome-yes" class="hidden w-full max-w-md mx-auto flex-col items-center my-auto space-y-4">
-        <i data-lucide="heart" class="w-20 h-20 fill-rose-400 text-rose-500 animate-heartbeat"></i>
+        <div class="text-6xl animate-heartbeat">❤️</div>
         <h4 class="text-2xl font-bold text-gray-800">Thank you ❤️</h4>
         <p class="text-xs text-rose-500 font-medium">I'll try to do better.</p>
       </div>
@@ -281,7 +279,7 @@
       </div>
 
       <div id="sorry-outcome-angry" class="hidden w-full max-w-md mx-auto flex-col items-center my-auto space-y-3">
-        <i data-lucide="shield-alert" class="w-16 h-16 text-rose-300"></i>
+        <div class="text-5xl">🛡️</div>
         <h4 class="text-xl font-bold text-gray-800">Okay... I understand.</h4>
         <p class="text-xs text-rose-400 font-medium">I'm still here. ❤️</p>
       </div>
@@ -312,8 +310,8 @@
       </div>
 
       <div class="my-auto flex flex-col items-center w-full max-w-md">
-        <div id="gift-box-icon" class="text-rose-400 cursor-pointer my-4" onclick="openSurprise()">
-          <i data-lucide="gift" class="w-28 h-28 stroke-[1.25]"></i>
+        <div id="gift-box-icon" class="text-6xl cursor-pointer my-4" onclick="openSurprise()">
+          🎁
         </div>
 
         <div class="bg-white p-6 rounded-2xl border border-rose-200 shadow-sm w-full min-h-[120px] flex flex-col items-center justify-center">
@@ -357,31 +355,31 @@
     const OPEN_WHEN_LETTERS = [
       {
         title: "Open when... You miss me",
-        icon: "heart-handshake",
+        icon: "🤝",
         tag: "Missing You",
         body: "I wish I could wrap my arms around you right now. Distance or time doesn't change how much you mean to me.\n\nWhenever you feel this way, take a deep breath and close your eyes—I'm holding your hand in my heart."
       },
       {
         title: "Open when... You had a hard day",
-        icon: "cloud-rain",
+        icon: "🌧️",
         tag: "Comfort",
         body: "Today might have been exhausting, but you made it through. I am so proud of you.\n\nUnwind, let go of the pressure, and rest easy. I am right here cheering for you, always."
       },
       {
         title: "Open when... You're feeling insecure",
-        icon: "shield-check",
+        icon: "🛡️",
         tag: "Reminder",
         body: "You are more than enough. You don't have to prove anything to be worthy of love.\n\nTo me, you are radiant, kind, and precious. Don't let doubt make you forget how amazing you truly are."
       },
       {
         title: "Open when... You need a smile",
-        icon: "smile",
+        icon: "😊",
         tag: "Joy",
         body: "Fun fact: Somewhere right now, I'm probably thinking about you and smiling like an idiot.\n\nNow it's your turn. Give me that beautiful smile. You deserve pure happiness today."
       },
       {
         title: "Open when... You can't sleep",
-        icon: "moon",
+        icon: "🌙",
         tag: "Nighttime",
         body: "The night is quiet, and so should your mind be. Turn off the overthinking.\n\nImagine me tucking you in softly. Close your eyes, rest your head, and dream happy dreams. Goodnight my love."
       }
@@ -397,4 +395,21 @@
     ];
 
     let lastLoveIndex = -1;
-    let s
+    let shownSurpriseIndices = [];
+    let isCounterRunning = false;
+
+    function navTo(screenId) {
+      document.querySelectorAll('.app-screen').forEach(s => s.classList.remove('active'));
+      
+      const header = document.getElementById('app-header');
+      const headerTitle = document.getElementById('header-title');
+
+      if (screenId === 'home' || screenId === 'splash') {
+        header.classList.add('hidden');
+      } else {
+        header.classList.remove('hidden');
+        if (screenId === 'iloveyou') headerTitle.innerText = "I Love You";
+        if (screenId === 'openwhen') headerTitle.innerText = "Open When Letters";
+        if (screenId === 'sorry') headerTitle.innerText = "I'm Sorry";
+        if (screenId === 'counter') headerTitle.innerText = "Love Counter";
+        if (screenId === 'surprise') 
