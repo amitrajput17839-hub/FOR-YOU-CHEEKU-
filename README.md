@@ -1,560 +1,384 @@
-# FOR-YOU-CHEEKU-
-import React, { useState, useEffect, useRef } from 'react';
-import {
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-  Animated,
-  Easing,
-  Dimensions,
-  TextInput,
-  ScrollView,
-  SafeAreaView,
-  StatusBar,
-  KeyboardAvoidingView,
-  Platform,
-} from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as Haptics from 'expo-haptics';
-import { Heart, Gift, Frown, Sparkles, ChevronLeft, Send, Lock } from 'lucide-react-native';
-
-const { width, height } = Dimensions.get('window');
-
-// ============================================================================
-// CONFIGURATION & CUSTOMIZABLE DATA
-// ============================================================================
-const ROMANTIC_MESSAGES = [
-  "I love you.",
-  "You are my favourite person.",
-  "I would still choose you.",
-  "You make ordinary days feel special.",
-  "I hope you never forget how loved you are.",
-  "I love having you in my life.",
-  "You make my world a little better.",
-  "I don't need a perfect life. I just want you in mine.",
-  "You are one of the best things that ever happened to me.",
-  "And if you ask me why I love you... I probably won't know how to explain it.",
-  "My favorite place in the world is right next to you.",
-  "You have no idea how much my heart races when I see you smile."
-];
-
-const APOLOGY_TEXT = 
-  "I know I don't always get everything right.\n" +
-  "Sometimes I say things I shouldn't.\n" +
-  "Sometimes I hurt you without meaning to.\n" +
-  "But I'm genuinely sorry.\n" +
-  "You mean too much to me to let my mistakes become bigger than us.";
-
-const SURPRISES = [
-  { id: '1', type: 'message', content: "I just wanted to remind you that I love you. ❤️", locked: false },
-  { id: '2', type: 'hug', content: "If I could give you one thing right now, it would be a really long hug. 🤗", locked: false },
-  { id: '3', type: 'compliment', content: "You're still my favourite person. In every universe.", locked: false },
-  { id: '4', type: 'reminder', content: "Just a reminder: someone out here is thinking about you right now.", locked: false },
-  { id: '5', type: 'simple', content: "Nothing special today...\n\nExcept that I love you.", locked: false },
-  { id: '6', type: 'memory', content: "Remember when we first met? I knew right then you were special.", locked: false },
-  { id: '7', type: 'future', content: "Something special is waiting here... [Locked Secret Surprise]", locked: true }
-];
-
-// Helper for haptics
-const triggerHaptic = () => {
-  if (Platform.OS !== 'web') {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
-  }
-};
-
-// ============================================================================
-// COMPONENT: PARTICLE SYSTEM (FLOATING HEARTS)
-// ============================================================================
-const HeartParticle = ({ onAnimationEnd }) => {
-  const animY = useRef(new Animated.Value(0)).current;
-  const animOpacity = useRef(new Animated.Value(1)).current;
-  const randomX = useRef((Math.random() - 0.5) * 160).current;
-  const randomSize = useRef(14 + Math.random() * 12).current;
-
-  useEffect(() => {
-    Animated.parallel([
-      Animated.timing(animY, {
-        toValue: -120 - Math.random() * 50,
-        duration: 1200 + Math.random() * 400,
-        easing: Easing.out(Easing.quad),
-        useNativeDriver: true,
-      }),
-      Animated.timing(animOpacity, {
-        toValue: 0,
-        duration: 1400,
-        easing: Easing.linear,
-        useNativeDriver: true,
-      }),
-    ]).start(() => {
-      if (onAnimationEnd) onAnimationEnd();
-    });
-  }, []);
-
-  return (
-    <Animated.View
-      style={{
-        position: 'absolute',
-        transform: [{ translateX: randomX }, { translateY: animY }],
-        opacity: animOpacity,
-      }}
-    >
-      <Heart size={randomSize} color="#FF6B81" fill="#FF6B81" />
-    </Animated.View>
-  );
-};
-
-// ============================================================================
-// MAIN APP COMPONENT
-// ============================================================================
-export default function App() {
-  const [currentScreen, setCurrentScreen] = useState('splash'); // splash, home, love, sorry, measure, surprise
-  const [particles, setParticles] = useState([]);
-
-  // --- SPLASH SCREEN LOGIC ---
-  const splashPulse = useRef(new Animated.Value(1)).current;
-  const splashOpacity = useRef(new Animated.Value(1)).current;
-
-  useEffect(() => {
-    // Pulse animation for splash heart
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(splashPulse, {
-          toValue: 1.25,
-          duration: 800,
-          easing: Easing.inOut(Easing.ease),
-          useNativeDriver: true,
-        }),
-        Animated.timing(splashPulse, {
-          toValue: 1,
-          duration: 800,
-          easing: Easing.inOut(Easing.ease),
-          useNativeDriver: true,
-        }),
-      ])
-    ).start();
-
-    // Auto-navigate to home
-    const timer = setTimeout(() => {
-      Animated.timing(splashOpacity, {
-        toValue: 0,
-        duration: 600,
-        useNativeDriver: true,
-      }).start(() => {
-        setCurrentScreen('home');
-      });
-    }, 2800);
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  const spawnParticles = (count = 6) => {
-    triggerHaptic();
-    const newParticles = Array.from({ length: count }).map((_, i) => Date.now() + i);
-    setParticles((prev) => [...prev, ...newParticles]);
-  };
-
-  const removeParticle = (id) => {
-    setParticles((prev) => prev.filter((p) => p !== id));
-  };
-
-  // --- SCREEN RENDERERS ---
-  const renderHeader = (title) => (
-    <View style={styles.header}>
-      <TouchableOpacity
-        style={styles.backButton}
-        onPress={() => {
-          triggerHaptic();
-          setCurrentScreen('home');
-        }}
-        activeOpacity={0.7}
-      >
-        <ChevronLeft size={20} color="#FF6B81" />
-        <Text style={styles.backText}>For You</Text>
-      </TouchableOpacity>
-      <Text style={styles.headerTitle}>{title}</Text>
-      <View style={{ width: 60 }} />
-    </View>
-  );
-
-  return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFF8F9" />
-
-      {/* 1. SPLASH SCREEN */}
-      {currentScreen === 'splash' && (
-        <Animated.View style={[styles.splashContainer, { opacity: splashOpacity }]}>
-          <Animated.View style={{ transform: [{ scale: splashPulse }] }}>
-            <Heart size={80} color="#FF6B81" fill="#FF6B81" />
-          </Animated.View>
-          <Text style={styles.splashTitle}>For You</Text>
-          <Text style={styles.splashSubtitle}>A little place made only for you.</Text>
-        </Animated.View>
-      )}
-
-      {/* 2. HOME SCREEN */}
-      {currentScreen === 'home' && (
-        <View style={styles.mainContent}>
-          <View style={styles.homeHeader}>
-            <Text style={styles.mainTitle}>For You ❤️</Text>
-            <Text style={styles.subTitle}>Select a card below</Text>
-          </View>
-
-          <View style={styles.menuGrid}>
-            <TouchableOpacity
-              style={styles.card}
-              activeOpacity={0.85}
-              onPress={() => {
-                triggerHaptic();
-                setCurrentScreen('love');
-              }}
-            >
-              <View style={[styles.iconContainer, { backgroundColor: '#FFEBF0' }]}>
-                <Heart size={28} color="#FF6B81" fill="#FF6B81" />
-              </View>
-              <Text style={styles.cardTitle}>I Love You</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.card}
-              activeOpacity={0.85}
-              onPress={() => {
-                triggerHaptic();
-                setCurrentScreen('sorry');
-              }}
-            >
-              <View style={[styles.iconContainer, { backgroundColor: '#FFF0F5' }]}>
-                <Frown size={28} color="#FF8FA3" />
-              </View>
-              <Text style={styles.cardTitle}>I'm Sorry</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.card}
-              activeOpacity={0.85}
-              onPress={() => {
-                triggerHaptic();
-                setCurrentScreen('measure');
-              }}
-            >
-              <View style={[styles.iconContainer, { backgroundColor: '#FFF2F0' }]}>
-                <Sparkles size={28} color="#FF758F" />
-              </View>
-              <Text style={styles.cardTitle}>How Much I Love You</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.card}
-              activeOpacity={0.85}
-              onPress={() => {
-                triggerHaptic();
-                setCurrentScreen('surprise');
-              }}
-            >
-              <View style={[styles.iconContainer, { backgroundColor: '#FFF5F5' }]}>
-                <Gift size={28} color="#FF4D6D" />
-              </View>
-              <Text style={styles.cardTitle}>A Little Surprise</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      )}
-
-      {/* 3. FEATURE 1: I LOVE YOU */}
-      {currentScreen === 'love' && (
-        <ILoveYouScreen
-          renderHeader={renderHeader}
-          spawnParticles={spawnParticles}
-          particles={particles}
-          removeParticle={removeParticle}
-        />
-      )}
-
-      {/* 4. FEATURE 2: I'M SORRY */}
-      {currentScreen === 'sorry' && <ImSorryScreen renderHeader={renderHeader} />}
-
-      {/* 5. FEATURE 3: HOW MUCH I LOVE YOU */}
-      {currentScreen === 'measure' && <MeasureLoveScreen renderHeader={renderHeader} />}
-
-      {/* 6. FEATURE 4: A LITTLE SURPRISE */}
-      {currentScreen === 'surprise' && (
-        <SurpriseScreen
-          renderHeader={renderHeader}
-          spawnParticles={spawnParticles}
-          particles={particles}
-          removeParticle={removeParticle}
-        />
-      )}
-    </SafeAreaView>
-  );
-}
-
-// ============================================================================
-// SUB-SCREEN 1: I LOVE YOU
-// ============================================================================
-function ILoveYouScreen({ renderHeader, spawnParticles, particles, removeParticle }) {
-  const [msgIndex, setMsgIndex] = useState(0);
-  const heartScale = useRef(new Animated.Value(1)).current;
-  const msgFade = useRef(new Animated.Value(1)).current;
-
-  const handleTap = () => {
-    spawnParticles(8);
-
-    // Heart bounce
-    Animated.sequence([
-      Animated.timing(heartScale, { toValue: 1.3, duration: 150, useNativeDriver: true }),
-      Animated.timing(heartScale, { toValue: 1, duration: 150, useNativeDriver: true }),
-    ]).start();
-
-    // Message transition
-    Animated.timing(msgFade, { toValue: 0, duration: 150, useNativeDriver: true }).start(() => {
-      let nextIdx;
-      do {
-        nextIdx = Math.floor(Math.random() * ROMANTIC_MESSAGES.length);
-      } while (nextIdx === msgIndex && ROMANTIC_MESSAGES.length > 1);
-
-      setMsgIndex(nextIdx);
-      Animated.timing(msgFade, { toValue: 1, duration: 250, useNativeDriver: true }).start();
-    });
-  };
-
-  return (
-    <View style={styles.featureContainer}>
-      {renderHeader("I Love You")}
-      <View style={styles.centerContent}>
-        <View style={styles.particleCanvas}>
-          {particles.map((id) => (
-            <HeartParticle key={id} onAnimationEnd={() => removeParticle(id)} />
-          ))}
-          <TouchableOpacity activeOpacity={0.9} onPress={handleTap}>
-            <Animated.View style={{ transform: [{ scale: heartScale }] }}>
-              <Heart size={110} color="#FF6B81" fill="#FF6B81" />
-            </Animated.View>
-          </TouchableOpacity>
-        </View>
-
-        <Text style={styles.tapInstruction}>Tap the heart</Text>
-
-        <Animated.View style={[styles.messageCard, { opacity: msgFade }]}>
-          <Text style={styles.messageText}>"{ROMANTIC_MESSAGES[msgIndex]}"</Text>
-        </Animated.View>
-
-        <Text style={styles.subInstruction}>Tap the heart again ❤️</Text>
-      </View>
-    </View>
-  );
-}
-
-// ============================================================================
-// SUB-SCREEN 2: I'M SORRY
-// ============================================================================
-function ImSorryScreen({ renderHeader }) {
-  const [stage, setStage] = useState('initial'); // 'initial', 'apology', 'response'
-  const [responseType, setResponseType] = useState(null); // 'yes', 'chat', 'angry'
-  const [messages, setMessages] = useState([]);
-  const [inputText, setInputText] = useState('');
-
-  const handleSendMessage = () => {
-    if (!inputText.trim()) return;
-    triggerHaptic();
-    setMessages((prev) => [...prev, { id: Date.now().toString(), text: inputText }]);
-    setInputText('');
-  };
-
-  return (
-    <KeyboardAvoidingView
-      style={styles.featureContainer}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
-      {renderHeader("I'm Sorry")}
-
-      <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
-        {stage === 'initial' && (
-          <View style={styles.centerContent}>
-            <Frown size={70} color="#FF8FA3" style={{ marginBottom: 16 }} />
-            <Text style={styles.sorryTitle}>I'm Sorry...</Text>
-            <Text style={styles.sorrySubtitle}>I know sometimes I mess things up.</Text>
-
-            <TouchableOpacity
-              style={styles.primaryBtn}
-              activeOpacity={0.8}
-              onPress={() => {
-                triggerHaptic();
-                setStage('apology');
-              }}
-            >
-              <Text style={styles.primaryBtnText}>Listen to me</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-
-        {stage === 'apology' && (
-          <View style={styles.apologyContainer}>
-            <View style={styles.apologyCard}>
-              <Text style={styles.apologyText}>{APOLOGY_TEXT}</Text>
-            </View>
-
-            <Text style={styles.forgiveQuestion}>Forgive me?</Text>
-
-            <View style={styles.optionList}>
-              <TouchableOpacity
-                style={[styles.optionBtn, { backgroundColor: '#FFEBF0' }]}
-                onPress={() => {
-                  triggerHaptic();
-                  setResponseType('yes');
-                  setStage('response');
-                }}
-              >
-                <Text style={styles.optionBtnText}>❤️ Yes</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[styles.optionBtn, { backgroundColor: '#FFF5F7' }]}
-                onPress={() => {
-                  triggerHaptic();
-                  setResponseType('chat');
-                  setStage('response');
-                }}
-              >
-                <Text style={styles.optionBtnText}>💬 Talk to me</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[styles.optionBtn, { backgroundColor: '#F8F9FA' }]}
-                onPress={() => {
-                  triggerHaptic();
-                  setResponseType('angry');
-                  setStage('response');
-                }}
-              >
-                <Text style={styles.optionBtnText}>😤 Still angry</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        )}
-
-        {stage === 'response' && (
-          <View style={styles.responseContainer}>
-            {responseType === 'yes' && (
-              <View style={styles.centerContent}>
-                <Heart size={80} color="#FF6B81" fill="#FF6B81" style={{ marginBottom: 20 }} />
-                <Text style={styles.responseTitle}>Thank you ❤️</Text>
-                <Text style={styles.responseSubtitle}>I promise I'll try to do better.</Text>
-              </View>
-            )}
-
-            {responseType === 'angry' && (
-              <View style={styles.centerContent}>
-                <Frown size={80} color="#FF8FA3" style={{ marginBottom: 20 }} />
-                <Text style={styles.responseTitle}>Okay... I understand.</Text>
-                <Text style={styles.responseSubtitle}>I'm still here whenever you're ready. ❤️</Text>
-              </View>
-            )}
-
-            {responseType === 'chat' && (
-              <View style={styles.chatWrapper}>
-                <Text style={styles.chatHeaderTitle}>Okay... I'm listening.</Text>
-                <Text style={styles.chatHeaderSubtitle}>Tell me what's in your heart.</Text>
-
-                <View style={styles.chatBox}>
-                  {messages.length === 0 ? (
-                    <Text style={styles.emptyChatText}>Type your thoughts below...</Text>
-                  ) : (
-                    messages.map((m) => (
-                      <View key={m.id} style={styles.chatBubble}>
-                        <Text style={styles.chatBubbleText}>{m.text}</Text>
-                      </View>
-                    ))
-                  )}
-                </View>
-
-                <View style={styles.inputRow}>
-                  <TextInput
-                    style={styles.textInput}
-                    placeholder="Write here..."
-                    placeholderTextColor="#A0A0A0"
-                    value={inputText}
-                    onChangeText={setInputText}
-                  />
-                  <TouchableOpacity style={styles.sendBtn} onPress={handleSendMessage}>
-                    <Send size={18} color="#FFF" />
-                  </TouchableOpacity>
-                </View>
-              </View>
-            )}
-          </View>
-        )}
-      </ScrollView>
-    </KeyboardAvoidingView>
-  );
-}
-
-// ============================================================================
-// SUB-SCREEN 3: HOW MUCH I LOVE YOU
-// ============================================================================
-function MeasureLoveScreen({ renderHeader }) {
-  const [counter, setCounter] = useState(0);
-  const [isCounting, setIsCounting] = useState(false);
-  const [isFinished, setIsFinished] = useState(false);
-  const pulseAnim = useRef(new Animated.Value(1)).current;
-
-  const startMeasurement = () => {
-    triggerHaptic();
-    setCounter(0);
-    setIsCounting(true);
-    setIsFinished(false);
-
-    let currentVal = 0;
-    const interval = setInterval(() => {
-      currentVal += Math.floor(Math.random() * 25) + 10;
-      if (currentVal >= 999) {
-        clearInterval(interval);
-        setCounter('999');
-        setTimeout(() => {
-          setIsCounting(false);
-          setIsFinished(true);
-          // Start pulsating infinity
-          Animated.loop(
-            Animated.sequence([
-              Animated.timing(pulseAnim, { toValue: 1.3, duration: 600, useNativeDriver: true }),
-              Animated.timing(pulseAnim, { toValue: 1, duration: 600, useNativeDriver: true }),
-            ])
-          ).start();
-        }, 500);
-      } else {
-        setCounter(currentVal);
-      }
-    }, 100);
-  };
-
-  return (
-    <View style={styles.featureContainer}>
-      {renderHeader("How Much I Love You")}
-      <View style={styles.centerContent}>
-        <Text style={styles.measureSubtitle}>Want to know how much I love you?</Text>
-
-        {!isCounting && !isFinished && (
-          <TouchableOpacity style={styles.primaryBtn} activeOpacity={0.8} onPress={startMeasurement}>
-            <Text style={styles.primaryBtnText}>MEASURE MY LOVE ❤️</Text>
-          </TouchableOpacity>
-        )}
-
-        {(isCounting || isFinished) && (
-          <View style={styles.counterBox}>
-            {!isFinished ? (
-              <Text style={styles.counterText}>{counter}%</Text>
-            ) : (
-              <Animated.Text style={[styles.infinityText, { transform: [{ scale: pulseAnim }] }]}>
-                ∞
-              </Animated.Text>
-            )}
-          </View>
-        )}
-
-        {isFinished && (
-          <View style={styles.finalMessageContainer}>
-            <Text style={styles.finalTextMain}>There isn't a number big enough.</Text>
-            <Text style={styles.finalTextSub}>So I stopped counting.</Text>
-
-            <TouchableOpacity
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>For You ❤️</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  
+  <!-- Custom Styling & Keyframe Animations -->
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
     
+    * {
+      touch-action: manipulation;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    body {
+      background-color: #fffafb;
+      color: #4a3e3e;
+      overflow-x: hidden;
+    }
+
+    /* Soft Heartbeat Pulse */
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      15% { transform: scale(1.18); }
+      30% { transform: scale(1); }
+      45% { transform: scale(1.1); }
+    }
+    .animate-heartbeat {
+      animation: heartbeat 1.8s infinite ease-in-out;
+    }
+
+    /* Gentle Floating Animation */
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-8px); }
+    }
+    .animate-float {
+      animation: float 3s infinite ease-in-out;
+    }
+
+    /* Gift Shake Animation */
+    @keyframes giftShake {
+      0%, 100% { transform: rotate(0deg) scale(1); }
+      20% { transform: rotate(-8deg) scale(1.05); }
+      40% { transform: rotate(8deg) scale(1.05); }
+      60% { transform: rotate(-8deg) scale(1.05); }
+      80% { transform: rotate(8deg) scale(1.05); }
+    }
+    .animate-shake {
+      animation: giftShake 0.6s cubic-bezier(.36,.07,.19,.97) both;
+    }
+
+    /* Floating background hearts */
+    .bg-heart {
+      position: fixed;
+      color: rgba(255, 182, 193, 0.25);
+      pointer-events: none;
+      z-index: 0;
+      animation: float 4s infinite ease-in-out;
+    }
+
+    .screen {
+      transition: opacity 0.35s ease, transform 0.35s ease;
+    }
+    
+    .screen-hidden {
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(0.97);
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+    }
+
+    .screen-visible {
+      opacity: 1;
+      pointer-events: auto;
+      transform: scale(1);
+      position: relative;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4 selection:bg-rose-100">
+
+  <!-- Ambient Floating Background Elements -->
+  <div class="bg-heart text-4xl top-10 left-6" style="animation-delay: 0s;">🌸</div>
+  <div class="bg-heart text-3xl top-1/4 right-8" style="animation-delay: 1s;">✨</div>
+  <div class="bg-heart text-5xl bottom-20 left-10" style="animation-delay: 2s;">💖</div>
+  <div class="bg-heart text-3xl bottom-10 right-8" style="animation-delay: 1.5s;">🧸</div>
+
+  <!-- Main Container Mobile Wrapper -->
+  <main class="w-full max-w-md min-h-[640px] h-[88vh] bg-white/80 backdrop-blur-md rounded-3xl shadow-xl shadow-rose-100/50 border border-rose-100 flex flex-col overflow-hidden relative z-10">
+
+    <!-- ========================================== -->
+    <!-- SCREEN 0: OPENING SPLASH SCREEN -->
+    <!-- ========================================== -->
+    <section id="screen-splash" class="screen screen-visible h-full flex flex-col items-center justify-center text-center p-6 bg-gradient-to-b from-rose-50/50 to-white">
+      <div class="animate-heartbeat text-rose-500 mb-6 drop-shadow-sm">
+        <i data-lucide="heart" class="w-24 h-24 fill-rose-400 stroke-rose-500"></i>
+      </div>
+      <h1 class="text-3xl font-bold text-gray-800 tracking-tight mb-2">For You</h1>
+      <p class="text-rose-400 font-medium text-sm tracking-wide">A little place made only for you.</p>
+    </section>
+
+    <!-- Header Navigation Bar -->
+    <header id="app-header" class="hidden px-6 pt-5 pb-2 flex items-center justify-between z-20">
+      <button id="btn-back" onclick="navTo('home')" class="inline-flex items-center gap-1.5 text-sm font-semibold text-rose-400 hover:text-rose-600 transition-colors active:scale-95">
+        <i data-lucide="chevron-left" class="w-5 h-5"></i>
+        <span>For You</span>
+      </button>
+      <span id="header-title" class="text-xs font-semibold text-rose-300 tracking-widest uppercase"></span>
+    </header>
+
+    <!-- Dynamic Content Screens -->
+    <div class="flex-1 relative overflow-y-auto overflow-x-hidden p-6 flex flex-col justify-center">
+
+      <!-- ========================================== -->
+      <!-- SCREEN 1: HOME SCREEN -->
+      <!-- ========================================== -->
+      <section id="screen-home" class="screen screen-hidden flex flex-col justify-between h-full py-1">
+        <div class="text-center mb-4">
+          <h2 class="text-2xl font-bold text-gray-800 flex items-center justify-center gap-2">
+            For You <span class="animate-heartbeat inline-block text-rose-500">❤️</span>
+          </h2>
+          <p class="text-xs text-rose-300 mt-1">Choose a little card below</p>
+        </div>
+
+        <div class="grid grid-cols-1 gap-2.5 my-auto">
+          <!-- Card 1 -->
+          <button onclick="navTo('iloveyou')" class="group relative w-full p-3.5 bg-gradient-to-r from-rose-50 to-white rounded-2xl border border-rose-100/80 shadow-sm hover:shadow-md transition-all active:scale-[0.98] flex items-center justify-between text-left">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-rose-100 text-rose-500 flex items-center justify-center shadow-inner">
+                <i data-lucide="heart" class="w-5 h-5 fill-rose-400"></i>
+              </div>
+              <div>
+                <h3 class="font-bold text-gray-800 text-sm group-hover:text-rose-500 transition-colors">I Love You</h3>
+                <p class="text-[11px] text-rose-400/80 font-medium">Tap to hear sweet thoughts</p>
+              </div>
+            </div>
+            <i data-lucide="sparkles" class="w-4 h-4 text-rose-300"></i>
+          </button>
+
+          <!-- Card 2 -->
+          <button onclick="navTo('openwhen')" class="group relative w-full p-3.5 bg-gradient-to-r from-rose-50 to-white rounded-2xl border border-rose-100/80 shadow-sm hover:shadow-md transition-all active:scale-[0.98] flex items-center justify-between text-left">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-rose-100 text-rose-500 flex items-center justify-center shadow-inner">
+                <i data-lucide="mail" class="w-5 h-5"></i>
+              </div>
+              <div>
+                <h3 class="font-bold text-gray-800 text-sm group-hover:text-rose-500 transition-colors">Open When...</h3>
+                <p class="text-[11px] text-rose-400/80 font-medium">Digital love letters for any mood</p>
+              </div>
+            </div>
+            <i data-lucide="heart-handshake" class="w-4 h-4 text-rose-300"></i>
+          </button>
+
+          <!-- Card 3 -->
+          <button onclick="navTo('sorry')" class="group relative w-full p-3.5 bg-gradient-to-r from-rose-50 to-white rounded-2xl border border-rose-100/80 shadow-sm hover:shadow-md transition-all active:scale-[0.98] flex items-center justify-between text-left">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-rose-100 text-rose-500 flex items-center justify-center shadow-inner">
+                <i data-lucide="smile-plus" class="w-5 h-5"></i>
+              </div>
+              <div>
+                <h3 class="font-bold text-gray-800 text-sm group-hover:text-rose-500 transition-colors">I'm Sorry</h3>
+                <p class="text-[11px] text-rose-400/80 font-medium">From my heart to yours</p>
+              </div>
+            </div>
+            <i data-lucide="heart-handshake" class="w-4 h-4 text-rose-300"></i>
+          </button>
+
+          <!-- Card 4 -->
+          <button onclick="navTo('counter')" class="group relative w-full p-3.5 bg-gradient-to-r from-rose-50 to-white rounded-2xl border border-rose-100/80 shadow-sm hover:shadow-md transition-all active:scale-[0.98] flex items-center justify-between text-left">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-rose-100 text-rose-500 flex items-center justify-center shadow-inner">
+                <i data-lucide="infinity" class="w-5 h-5"></i>
+              </div>
+              <div>
+                <h3 class="font-bold text-gray-800 text-sm group-hover:text-rose-500 transition-colors">How Much I Love You</h3>
+                <p class="text-[11px] text-rose-400/80 font-medium">Let's try to count it</p>
+              </div>
+            </div>
+            <i data-lucide="calculator" class="w-4 h-4 text-rose-300"></i>
+          </button>
+
+          <!-- Card 5 -->
+          <button onclick="navTo('surprise')" class="group relative w-full p-3.5 bg-gradient-to-r from-rose-50 to-white rounded-2xl border border-rose-100/80 shadow-sm hover:shadow-md transition-all active:scale-[0.98] flex items-center justify-between text-left">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-rose-100 text-rose-500 flex items-center justify-center shadow-inner">
+                <i data-lucide="gift" class="w-5 h-5"></i>
+              </div>
+              <div>
+                <h3 class="font-bold text-gray-800 text-sm group-hover:text-rose-500 transition-colors">A Little Surprise</h3>
+                <p class="text-[11px] text-rose-400/80 font-medium">Unwrap something special</p>
+              </div>
+            </div>
+            <i data-lucide="package-open" class="w-4 h-4 text-rose-300"></i>
+          </button>
+        </div>
+
+        <div class="text-center pt-2">
+          <p class="text-[11px] text-rose-300 font-medium">Always yours • No matter what</p>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- FEATURE 1: I LOVE YOU -->
+      <!-- ========================================== -->
+      <section id="screen-iloveyou" class="screen screen-hidden flex flex-col items-center justify-between h-full text-center py-4">
+        <div class="mt-2">
+          <p class="text-xs font-semibold text-rose-400 uppercase tracking-widest mb-1">Interactive Love Heart</p>
+          <p class="text-sm text-gray-500">Tap the heart whenever you need a reminder</p>
+        </div>
+
+        <div class="my-auto flex flex-col items-center w-full">
+          <button id="heart-btn" onclick="triggerLoveMessage(event)" class="relative focus:outline-none active:scale-90 transition-transform duration-200 group">
+            <div id="heart-icon" class="animate-heartbeat text-rose-500 drop-shadow-md group-hover:scale-105 transition-transform">
+              <i data-lucide="heart" class="w-32 h-32 fill-rose-400 stroke-rose-500"></i>
+            </div>
+            <span class="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-white/90 border border-rose-100 px-3 py-0.5 rounded-full text-xs font-medium text-rose-400 shadow-sm">
+              Tap me
+            </span>
+          </button>
+
+          <div class="min-h-[120px] mt-8 flex items-center justify-center px-4 w-full">
+            <p id="love-message-display" class="text-lg font-medium text-gray-700 leading-relaxed transition-all duration-300 opacity-0 transform translate-y-2">
+              "Tap the heart above... ❤️"
+            </p>
+          </div>
+        </div>
+
+        <div class="mb-2">
+          <p class="text-xs text-rose-400 font-medium animate-pulse">Tap the heart again ❤️</p>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- FEATURE 2: OPEN WHEN... LETTERS -->
+      <!-- ========================================== -->
+      <section id="screen-openwhen" class="screen screen-hidden flex flex-col items-center justify-between h-full text-center py-1">
+        <div id="openwhen-list-view" class="w-full flex flex-col h-full">
+          <div class="mb-3 text-left">
+            <h2 class="text-xl font-bold text-gray-800">Open When...</h2>
+            <p class="text-xs text-rose-400">Pick a letter for whatever you're feeling right now.</p>
+          </div>
+
+          <div class="flex-1 overflow-y-auto pr-1 space-y-2 max-h-[400px]" id="letters-container">
+            <!-- Letters injected dynamically -->
+          </div>
+        </div>
+
+        <!-- Single Letter Reading View -->
+        <div id="openwhen-read-view" class="hidden w-full flex-col h-full text-left justify-between">
+          <div class="bg-rose-50/60 border border-rose-100 p-5 rounded-2xl shadow-inner my-auto max-h-[360px] overflow-y-auto">
+            <span id="letter-tag" class="text-[10px] uppercase tracking-wider font-bold text-rose-400 bg-rose-100/80 px-2.5 py-1 rounded-full mb-3 inline-block"></span>
+            <h3 id="letter-title" class="text-base font-bold text-gray-800 mb-3"></h3>
+            <p id="letter-body" class="text-xs text-gray-700 leading-relaxed whitespace-pre-line"></p>
+          </div>
+
+          <button onclick="closeLetter()" class="w-full mt-3 py-3 bg-rose-400 hover:bg-rose-500 text-white font-semibold rounded-xl transition-all active:scale-95 text-xs">
+            Back to All Letters ❤️
+          </button>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- FEATURE 3: I'M SORRY -->
+      <!-- ========================================== -->
+      <section id="screen-sorry" class="screen screen-hidden flex flex-col items-center justify-between h-full text-center py-2">
+        <div id="sorry-step-1" class="w-full flex flex-col items-center justify-between h-full py-2">
+          <div>
+            <h2 class="text-2xl font-bold text-gray-800 mb-1">I'm Sorry...</h2>
+            <p class="text-xs text-rose-400">I know sometimes I mess things up.</p>
+          </div>
+
+          <div class="my-auto flex flex-col items-center">
+            <div class="animate-float text-rose-300 my-4">
+              <i data-lucide="frown" class="w-24 h-24 stroke-[1.5]"></i>
+            </div>
+          </div>
+
+          <button onclick="showApologyText()" class="w-full py-3.5 bg-rose-400 hover:bg-rose-500 text-white font-semibold rounded-xl shadow-md shadow-rose-200 transition-all active:scale-95 flex items-center justify-center gap-2">
+            <span>Listen to me</span>
+            <i data-lucide="heart-handshake" class="w-5 h-5"></i>
+          </button>
+        </div>
+
+        <div id="sorry-step-2" class="hidden w-full flex-col justify-between h-full py-2 text-left">
+          <div class="bg-rose-50/70 border border-rose-100 p-5 rounded-2xl shadow-inner my-auto max-h-[320px] overflow-y-auto">
+            <p class="text-sm text-gray-700 leading-relaxed font-normal">
+              I know I don't always get everything right.<br><br>
+              Sometimes I say things I shouldn't. Sometimes I make mistakes. But I never want my mistakes to make you feel like you are not important to me.<br><br>
+              You mean too much to me. I'm genuinely sorry. And I'll always want to make things better between us. ❤️
+            </p>
+          </div>
+
+          <div class="mt-4 text-center">
+            <p class="text-sm font-semibold text-gray-700 mb-3">Forgive me?</p>
+            <div class="grid grid-cols-3 gap-2">
+              <button onclick="handleApologyChoice('yes')" class="py-2.5 px-3 bg-rose-500 hover:bg-rose-600 text-white text-xs font-semibold rounded-xl transition-all active:scale-95 shadow-sm">
+                ❤️ Yes
+              </button>
+              <button onclick="handleApologyChoice('talk')" class="py-2.5 px-3 bg-rose-100 hover:bg-rose-200 text-rose-600 text-xs font-semibold rounded-xl transition-all active:scale-95">
+                💬 Talk to me
+              </button>
+              <button onclick="handleApologyChoice('angry')" class="py-2.5 px-3 bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs font-semibold rounded-xl transition-all active:scale-95">
+                😤 Still angry
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div id="sorry-outcome-yes" class="hidden w-full flex-col items-center justify-center h-full my-auto text-center space-y-4">
+          <div class="animate-heartbeat text-rose-500">
+            <i data-lucide="heart" class="w-24 h-24 fill-rose-400 stroke-[1.5]"></i>
+          </div>
+          <h3 class="text-2xl font-bold text-gray-800">Thank you ❤️</h3>
+          <p class="text-sm text-rose-500 font-medium">I'll try to do better.</p>
+        </div>
+
+        <div id="sorry-outcome-talk" class="hidden w-full flex-col h-full text-left">
+          <div class="mb-3">
+            <h3 class="text-base font-bold text-gray-800">Okay... I'm listening.</h3>
+            <p class="text-xs text-rose-400">Tell me what's in your heart.</p>
+          </div>
+
+          <div id="chat-box" class="flex-1 bg-rose-50/40 border border-rose-100 rounded-2xl p-3 overflow-y-auto space-y-2.5 mb-3 max-h-[260px]">
+            <div class="bg-white border border-rose-100 text-gray-700 text-xs p-3 rounded-2xl rounded-tl-none max-w-[85%] shadow-sm">
+              I'm here for you. Take all the time you need...
+            </div>
+          </div>
+
+          <form onsubmit="sendPrivateMessage(event)" class="flex gap-2">
+            <input type="text" id="chat-input" placeholder="Type what you feel..." class="flex-1 text-xs px-3.5 py-2.5 rounded-xl border border-rose-200 focus:outline-none focus:border-rose-400 bg-white shadow-sm" />
+            <button type="submit" class="bg-rose-400 hover:bg-rose-500 text-white px-4 py-2.5 rounded-xl text-xs font-semibold transition-all active:scale-95 shadow-sm">
+              Send
+            </button>
+          </form>
+        </div>
+
+        <div id="sorry-outcome-angry" class="hidden w-full flex-col items-center justify-center h-full my-auto text-center space-y-4">
+          <div class="animate-float text-rose-300">
+            <i data-lucide="shield-alert" class="w-20 h-20"></i>
+          </div>
+          <h3 class="text-xl font-bold text-gray-800">Okay... I understand.</h3>
+          <p class="text-sm text-rose-400 font-medium">I'm still here. ❤️</p>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- FEATURE 4: HOW MUCH I LOVE YOU -->
+      <!-- ========================================== -->
+      <section id="screen-counter" class="screen screen-hidden flex flex-col items-center justify-between h-full text-center py-4">
+        <div>
+          <h2 class="text-xl font-bold text-gray-800 mb-1">How Much I Love You</h2>
+          <p class="text-xs text-rose-400">Want to know how much I love you?</p>
+        </div>
+
+        <div class="my-auto flex flex-col items-center w-full">
+          <div class="w-full py-8 px-4 bg-gradient-to-b from-rose-50 to-white rounded-3xl border border-rose-100 shadow-inner flex flex-col items-center justify-center min-h-[180px]">
+            <span id="counter-value" class="text-5xl font-extrabold text-rose-500 tracking-tight transition-all">0%</span>
+            <p id="counter-subtext" class="text-xs text-rose-400 font-medium mt-3 opacity-0 transition-opacity duration-500 min-h-[16px]"></p>
+          </div>
+        </div>
+
+        <button id="counter-btn" onclick="startLoveCounter()" class="w-full py-3.5 bg-rose-400 hover:bg-rose-500 text-white font-semibold rounded-xl shadow-md shadow-rose-200 transition-all active:scale-95 flex items-center justify-center gap-2">
+          <i data-lucide="heart" class="w-5 h-5 fill-white"></i>
+          <span id="counter-btn-text">MEASURE MY LOVE ❤️</span>
+        </button>
+      </section>
+
+      <!-- ===================================
